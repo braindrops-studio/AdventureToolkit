@@ -21,6 +21,16 @@ namespace Braindrops.AdventureToolkit.Colliders
             col.isTrigger = isTrigger;
         }
 
+        public void DisableCollider()
+        {
+            col.enabled = false;
+        }
+
+        public void EnableCollider()
+        {
+            col.enabled = true;
+        }
+
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (IsValidTag(other.tag))
