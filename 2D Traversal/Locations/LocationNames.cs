@@ -3,6 +3,18 @@
     public enum Locations
     {
         Unspecified,
+        JumpingPlatform,
+        WebPuzzle,
+        CityCenterFlower,
+        GemHolder,
+        RightGhostArea,
+        LeftGhostArea,
+        Beetle,
+        RightFlower,
+        RightFlowerEnter,
+        LeftCaveDoor,
+        RightCaveDoor,
+        FrogArea,
         HouseTopFloor,
         HouseGroundFloor,
         HouseBasement,
