@@ -1,26 +1,30 @@
-﻿using System;
+﻿using Braindrops.Unolith.ServiceLocator;
+using Cycas.Library;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Braindrops.AdventureToolkit.Traversal.Locations
 {
     public class LocatedEntity : MonoBehaviour
     {
-        private string entityName = "";
+        [SerializeField] private CharacterNames entityName;
         private Locations currentLocation = Locations.Unspecified;
-        private Action<Locations> onLocationChange = locationName => {};
+        public UnityEvent<Locations> onLocationChange;
 
-        public void Setup(string characterName)
+        private LocationTracker locationTracker;
+
+        private void Start()
         {
-            this.entityName = characterName;
-            LocationTracker.RegisterEntity(this);
+            locationTracker = ServiceLocator.Instance.GetService<LocationTracker>();
+            locationTracker.RegisterEntity(this);
         }
 
-        public void AddLocationChangeListener(Action<Locations> callback)
+        public void AddLocationChangeListener(UnityAction<Locations> callback)
         {
-            onLocationChange += callback;
+            onLocationChange.AddListener(callback);
         }
 
-        public string EntityName => entityName;
+        public CharacterNames EntityName => entityName;
 
         public Locations CurrentLocation
         {

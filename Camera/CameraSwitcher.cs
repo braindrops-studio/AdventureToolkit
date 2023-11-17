@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using Braindrops.AdventureToolkit.Traversal.Locations;
+using Braindrops.Unolith.ServiceLocator;
 using Cinemachine;
+using Cycas.Library;
 using UnityEngine;
 
 namespace Braindrops.AdventureToolkit.Camera
@@ -11,17 +13,27 @@ namespace Braindrops.AdventureToolkit.Camera
         [SerializeField] private CameraData[] cameras;
 
         private CinemachineVirtualCamera currentCamera;
-
+        private LocationTracker locationTracker;
+        
         private void Awake()
         {
+            locationTracker = ServiceLocator.Instance.GetService<LocationTracker>();
             currentCamera = defaultCamera.virtualCamera;
             currentCamera.Priority = 0;
+        }
+
+        private void Start()
+        {
+            locationTracker.AddLocationChangeListener(CharacterNames.Floriqua, SwitchToCamera);
         }
 
         public void SwitchToCamera(Locations locationName)
         {
             currentCamera.Priority = -1;
-            currentCamera = FindCameraByLocation(locationName);
+            if (locationName == Locations.Unspecified)
+                currentCamera = defaultCamera.virtualCamera;
+            else
+                currentCamera = FindCameraByLocation(locationName);
             currentCamera.Priority = 0;
         }
 

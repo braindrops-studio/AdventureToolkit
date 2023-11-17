@@ -19,5 +19,12 @@ namespace Braindrops.AdventureToolkit.Traversal.Locations
             if (locatedEntity != null)
                 locatedEntity.CurrentLocation = locationName;
         }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            var locatedEntity = other.GetComponent<LocatedEntity>();
+            if (locatedEntity != null)
+                locatedEntity.CurrentLocation = Locations.Unspecified;
+        }
     }
 }
