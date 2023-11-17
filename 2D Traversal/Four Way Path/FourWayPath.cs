@@ -34,25 +34,25 @@ namespace Braindrops.AdventureToolkit.Traversal.FourWayPath
         {
             if (currentCollider == topLeftCollider)
             {
-                if (inputService.VerticalInputRaw == -1)
+                if ((int)inputService.VerticalInputRaw == -1)
                     topRightCollider.DisableCollider();
                 else
                     topRightCollider.EnableCollider();
             } else if (currentCollider == topRightCollider)
             {
-                if (inputService.VerticalInputRaw == -1)
+                if ((int)inputService.VerticalInputRaw == -1)
                     topLeftCollider.DisableCollider();
                 else
                     topLeftCollider.EnableCollider();                    
             } else if (currentCollider == bottomLeftCollider)
             {
-                if (inputService.VerticalInputRaw == -1)
+                if ((int)inputService.VerticalInputRaw == -1)
                     topRightCollider.DisableCollider();
                 else                    
                     topRightCollider.EnableCollider();
             } else if (currentCollider == bottomRightCollider)
             {
-                if (inputService.VerticalInputRaw == -1)
+                if ((int)inputService.VerticalInputRaw == -1)
                     topLeftCollider.DisableCollider();
                 else
                     topLeftCollider.EnableCollider();
