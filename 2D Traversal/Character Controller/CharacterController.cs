@@ -30,7 +30,7 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
 
         private Rigidbody2D rb;
 
-        private bool isJumping;
+        // private bool isJumping;
         private bool isGrounded;
         private bool isWalled;
 
@@ -58,25 +58,23 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
             var feetPosition = groundCheck.position;
             isGrounded = Physics2D.OverlapCircle(feetPosition, checkRadius, groundLayer);
             isWalled = Physics2D.OverlapCircle(wallCheck.position, checkRadius, wallLayer);
-
             var hit = Physics2D.Raycast(feetPosition, Vector2.down, checkRadius, groundLayer);
             if (hit && horizontalInput != 0)
             {
                 var tangent = Mathf.Sign(horizontalInput) * new Vector2(hit.normal.y, -hit.normal.x);
-                rb.velocity = tangent * moveSpeed;
+                rb.velocity = tangent * moveSpeed + (animationHandler.IsJumping ? Vector2.up * rb.velocity.y : Vector2.zero);
             }
-            
-            if (!isJumping && isGrounded && horizontalInput == 0)
-                StickToGround();
-            else
-                rb.gravityScale = 1;
-            
             
             if (inputService.IsPressingJump && isGrounded && !isWalled)
             {
-                isJumping = true;
+                rb.velocity += new Vector2(0f, jumpForce);
                 animationHandler.Jump();
             }
+            
+            if (!animationHandler.IsJumping && isGrounded && horizontalInput == 0)
+                StickToGround();
+            else
+                rb.gravityScale = 1;
 
             if (animationHandler.IsJumping)
                 return;
@@ -111,15 +109,6 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
             {
                 rb.velocity = Vector2.zero;
                 rb.gravityScale = 0;
-            }
-        }
-
-        private void FixedUpdate()
-        {
-            if (isJumping)
-            {
-                rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
-                isJumping = false;
             }
         }
 
