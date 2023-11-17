@@ -1,4 +1,4 @@
-﻿using BrainDrops.Unolith.Environments;
+﻿using Braindrops.AdventureToolkit.Traversal.Locations;
 using Cinemachine;
 
 namespace Braindrops.AdventureToolkit.Camera

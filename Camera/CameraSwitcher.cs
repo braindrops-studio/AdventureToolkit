@@ -1,9 +1,6 @@
 ﻿using System.Linq;
-using BrainDrops.Cycas.Library;
-using BrainDrops.Cycas.Logic;
-using BrainDrops.Unolith.Environments;
+using Braindrops.AdventureToolkit.Traversal.Locations;
 using Cinemachine;
-using Cycas.Library;
 using UnityEngine;
 
 namespace Braindrops.AdventureToolkit.Camera
