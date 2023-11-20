@@ -13,6 +13,9 @@ namespace Braindrops.AdventureToolkit.Traversal.FourWayPath
         [SerializeField] private CustomTrigger2D bottomRightCollider;
         [SerializeField] private CustomTrigger2D bottomLeftCollider;
 
+        [Header("Boundary")]
+        [SerializeField] private CustomTrigger2D boundary;
+
         private CustomTrigger2D currentCollider;
 
         private InputService inputService;
@@ -24,6 +27,9 @@ namespace Braindrops.AdventureToolkit.Traversal.FourWayPath
 
         private void Start()
         {
+            if (boundary != null)
+                boundary.onTriggerExit.AddListener((_) => ResetAllColliders());
+                
             topLeftCollider.onTriggerEnter.AddListener((_) => HandleColliderEnter(topLeftCollider));
             topRightCollider.onTriggerEnter.AddListener((_) => HandleColliderEnter(topRightCollider));
             bottomLeftCollider.onTriggerEnter.AddListener((_) => HandleColliderEnter(bottomLeftCollider));
@@ -70,6 +76,14 @@ namespace Braindrops.AdventureToolkit.Traversal.FourWayPath
         private void HandleColliderEnter(CustomTrigger2D customTrigger)
         {
             currentCollider = customTrigger;
+        }
+
+        private void ResetAllColliders()
+        {
+            topLeftCollider.EnableCollider();
+            topRightCollider.EnableCollider();
+            bottomLeftCollider.EnableCollider();
+            bottomRightCollider.EnableCollider();
         }
     }
 }
