@@ -111,6 +111,13 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
         public void ResetMoveSpeed()
         {
             moveSpeed = defaultMoveSpeed;
+            animationHandler.ResetAnimationSpeed();
+        }
+
+        public void MultiplyMoveSpeed(float amount, bool changeAnimationSpeed = true)
+        {
+            moveSpeed *= amount;
+            animationHandler.ChangeAnimationSpeed(amount);
         }
     }
 }

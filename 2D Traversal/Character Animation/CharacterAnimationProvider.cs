@@ -15,5 +15,9 @@ namespace Braindrops.AdventureToolkit.Traversal.CharacterAnimation
         public abstract void Idle();
 
         public abstract void Attack();
+        
+        public abstract void ChangeAnimationSpeed(float amount);
+
+        public abstract void ResetAnimationSpeed();
     }
 }
