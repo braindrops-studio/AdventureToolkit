@@ -46,7 +46,7 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
             
             defaultMoveSpeed = moveSpeed;
             characterScale = transform.localScale;
-            characterScaleX = characterScale.x;
+            characterScaleX = characterScale.x;            
         }
 
         private void Update()
@@ -63,18 +63,14 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
             {
                 var tangent = Mathf.Sign(horizontalInput) * new Vector2(hit.normal.y, -hit.normal.x);
                 rb.velocity = tangent * moveSpeed + (animationHandler.IsJumping ? Vector2.up * rb.velocity.y : Vector2.zero);
-            }
-            
-            if (inputService.IsPressingJump && isGrounded && !isWalled)
+                rb.gravityScale = 0;
+            } else
             {
-                rb.velocity += new Vector2(0f, jumpForce);
-                animationHandler.Jump();
+                if (!animationHandler.IsJumping && isGrounded && horizontalInput == 0)
+                    StickToGround();
+                else
+                    rb.gravityScale = 1;                
             }
-            
-            if (!animationHandler.IsJumping && isGrounded && horizontalInput == 0)
-                StickToGround();
-            else
-                rb.gravityScale = 1;
 
             if (animationHandler.IsJumping)
                 return;
