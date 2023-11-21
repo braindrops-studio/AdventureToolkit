@@ -9,7 +9,7 @@ namespace Braindrops.AdventureToolkit.Combat
     {
         [Header("Settings")]
         [SerializeField] private float attackCoolDown = 2f;
-        [SerializeField] private float attackRange = 1f;
+        [SerializeField] private float attackRadius = 1f;
         [SerializeField] private float attackPower = 100f;
         [SerializeField] private Transform attackStartPoint;
         
@@ -42,11 +42,11 @@ namespace Braindrops.AdventureToolkit.Combat
             animationHandler.Attack();
             lastAttackTime = Time.time;
 
-            var hits = Physics2D.RaycastAll(attackStartPoint.position, Vector2.right, attackRange);
+            var hits = Physics2D.OverlapCircleAll(attackStartPoint.position, attackRadius);
 
             foreach (var hit in hits)
             {
-                var damager = hit.collider.gameObject.GetComponent<Damager>();
+                var damager = hit.gameObject.GetComponent<Damager>();
                 damager?.TakeDamage(attackPower);
             }
         }
