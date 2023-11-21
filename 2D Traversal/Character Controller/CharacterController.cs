@@ -117,7 +117,8 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
         public void MultiplyMoveSpeed(float amount, bool changeAnimationSpeed = true)
         {
             moveSpeed *= amount;
-            animationHandler.ChangeAnimationSpeed(amount);
+            if (changeAnimationSpeed)
+                animationHandler.ChangeAnimationSpeed(amount);
         }
     }
 }
