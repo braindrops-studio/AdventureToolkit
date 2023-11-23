@@ -24,7 +24,7 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
         [Space(15)]
         [SerializeField] private LayerMask wallLayer;
         [SerializeField] private Transform wallCheck;
-        
+
         private Vector3 characterScale;
         private float characterScaleX;
 
@@ -55,15 +55,14 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
 
             HandleCharacterFlip();
 
-            var feetPosition = groundCheck.position;
-            isGrounded = Physics2D.OverlapCircle(feetPosition, checkRadius, groundLayer);
+            isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
             isWalled = Physics2D.OverlapCircle(wallCheck.position, checkRadius, wallLayer);
-            var hit = Physics2D.Raycast(feetPosition, Vector2.down, checkRadius, groundLayer);
+            var hit = Physics2D.Raycast(groundCheck.position, Vector2.down, checkRadius, groundLayer);
             if (hit && horizontalInput != 0)
             {
                 var tangent = Mathf.Sign(horizontalInput) * new Vector2(hit.normal.y, -hit.normal.x);
                 rb.velocity = tangent * moveSpeed + (animationHandler.IsJumping ? Vector2.up * rb.velocity.y : Vector2.zero);
-                rb.gravityScale = 0;
+                rb.gravityScale = 1;
             } else
             {
                 if (!animationHandler.IsJumping && isGrounded && horizontalInput == 0)
