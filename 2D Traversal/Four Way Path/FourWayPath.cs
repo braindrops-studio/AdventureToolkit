@@ -13,11 +13,16 @@ namespace Braindrops.AdventureToolkit.Traversal.FourWayPath
         [SerializeField] private CustomTrigger2D bottomRightCollider;
         [SerializeField] private CustomTrigger2D bottomLeftCollider;
 
+        [Header("Modifiers")]
+        [SerializeField] [Range(0f, .5f)] private float bottomRightTendency = 0f;
+        [SerializeField] [Range(0f, .5f)] private float bottomLeftTendency = 0f;
+
         [Header("Boundary")]
         [SerializeField] private CustomTrigger2D boundary;
 
-        private CustomTrigger2D currentCollider;
-
+        public CustomTrigger2D currentCollider;
+        private bool hasExitedCurrentCollider = true;
+        private CustomTrigger2D targetCollider;
         private InputService inputService;
 
         private void Awake()
@@ -34,6 +39,16 @@ namespace Braindrops.AdventureToolkit.Traversal.FourWayPath
             topRightCollider.onTriggerEnter.AddListener((_) => HandleColliderEnter(topRightCollider));
             bottomLeftCollider.onTriggerEnter.AddListener((_) => HandleColliderEnter(bottomLeftCollider));
             bottomRightCollider.onTriggerEnter.AddListener((_) => HandleColliderEnter(bottomRightCollider));
+            
+            topLeftCollider.onTriggerStay.AddListener((_) => HandleColliderEnter(topLeftCollider));
+            topRightCollider.onTriggerStay.AddListener((_) => HandleColliderEnter(topRightCollider));
+            bottomLeftCollider.onTriggerStay.AddListener((_) => HandleColliderEnter(bottomLeftCollider));
+            bottomRightCollider.onTriggerStay.AddListener((_) => HandleColliderEnter(bottomRightCollider));
+
+            topLeftCollider.onTriggerExit.AddListener((_) => HandleColliderExit(topLeftCollider));
+            topRightCollider.onTriggerExit.AddListener((_) => HandleColliderExit(topRightCollider));
+            bottomLeftCollider.onTriggerExit.AddListener((_) => HandleColliderExit(bottomLeftCollider));
+            bottomRightCollider.onTriggerExit.AddListener((_) => HandleColliderExit(bottomRightCollider));
         }
 
         private void Update()
@@ -42,40 +57,87 @@ namespace Braindrops.AdventureToolkit.Traversal.FourWayPath
             {
                 if (topRightCollider == bottomRightCollider)
                     return;
-                if ((int)inputService.VerticalInputRaw == -1)
+
+                if (inputService.VerticalInput < 0 + bottomRightTendency)
+                {
+                    targetCollider = bottomRightCollider;
                     topRightCollider.DisableCollider();
+                }
                 else
+                {
                     topRightCollider.EnableCollider();
+                    targetCollider = topRightCollider;
+                }
             } else if (currentCollider == topRightCollider)
             {
                 if (topLeftCollider == bottomLeftCollider)
                     return;
-                if ((int)inputService.VerticalInputRaw == -1)
+
+                if (inputService.VerticalInput < 0 + bottomLeftTendency)
+                {
+                    targetCollider = bottomLeftCollider;
                     topLeftCollider.DisableCollider();
+                }
                 else
-                    topLeftCollider.EnableCollider();                    
+                {
+                    topLeftCollider.EnableCollider();
+                    targetCollider = topLeftCollider;
+                }
             } else if (currentCollider == bottomLeftCollider)
             {
                 if (topRightCollider == bottomRightCollider)
                     return;
-                if ((int)inputService.VerticalInputRaw == -1)
+
+                if (inputService.VerticalInput < 0 + bottomRightTendency)
+                {
+                    targetCollider = bottomRightCollider;
                     topRightCollider.DisableCollider();
-                else                    
+                }
+                else
+                {
+                    targetCollider = topRightCollider;
                     topRightCollider.EnableCollider();
+                }
             } else if (currentCollider == bottomRightCollider)
             {
                 if (topLeftCollider == bottomLeftCollider)
                     return;
-                if ((int)inputService.VerticalInputRaw == -1)
+
+                if (inputService.VerticalInput < 0 + bottomLeftTendency)
+                {
+                    targetCollider = bottomLeftCollider;
                     topLeftCollider.DisableCollider();
+                }
                 else
+                {
                     topLeftCollider.EnableCollider();
+                    targetCollider = topLeftCollider;
+                }
             }
         }
 
         private void HandleColliderEnter(CustomTrigger2D customTrigger)
         {
-            currentCollider = customTrigger;
+            if (currentCollider == null)
+            {
+                currentCollider = customTrigger;
+                hasExitedCurrentCollider = false;
+            }
+            else if (customTrigger == targetCollider)
+            {
+                currentCollider = customTrigger;
+                targetCollider = null;
+                hasExitedCurrentCollider = false;
+            }
+        }
+
+        private void HandleColliderExit(CustomTrigger2D customTrigger)
+        {
+            if (currentCollider == customTrigger)
+            {
+                hasExitedCurrentCollider = true;
+                currentCollider = null;
+            }
         }
 
         private void ResetAllColliders()
