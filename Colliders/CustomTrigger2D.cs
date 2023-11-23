@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Braindrops.Unolith.Attributes;
 using UnityEngine;
 using UnityEngine.Events;
@@ -10,7 +11,9 @@ namespace Braindrops.AdventureToolkit.Colliders
     {
         [SerializeField] private bool isTrigger = true;
         [TagSelector] public string[] tags;
+        
         public UnityEvent<Collider2D> onTriggerEnter;
+        public UnityEvent<Collider2D> onTriggerStay;
         public UnityEvent<Collider2D> onTriggerExit;
 
         private Collider2D col;
@@ -23,11 +26,17 @@ namespace Braindrops.AdventureToolkit.Colliders
 
         public void DisableCollider()
         {
+            if (col == null)
+                return;
+
             col.enabled = false;
         }
 
         public void EnableCollider()
         {
+            if (col == null)
+                return;
+
             col.enabled = true;
         }
 
@@ -35,6 +44,12 @@ namespace Braindrops.AdventureToolkit.Colliders
         {
             if (IsValidTag(other.tag))
                 onTriggerEnter.Invoke(other);
+        }
+
+        private void OnTriggerStay2D(Collider2D other)
+        {
+            if (IsValidTag(other.tag))
+                onTriggerStay.Invoke(other);
         }
 
         private void OnTriggerExit2D(Collider2D other)
@@ -47,6 +62,12 @@ namespace Braindrops.AdventureToolkit.Colliders
         {
             if (IsValidTag(other.collider.tag))
                 onTriggerEnter.Invoke(other.collider);
+        }
+
+        private void OnCollisionStay2D(Collision2D other)
+        {
+            if (IsValidTag(other.collider.tag))
+                onTriggerStay.Invoke(other.collider);
         }
 
         private void OnCollisionExit2D(Collision2D other)
