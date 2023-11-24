@@ -7,7 +7,7 @@ namespace Braindrops.AdventureToolkit.Combat
         [Header("Properties")]
         [SerializeField] private float health;
         
-        public void TakeDamage(float amount)
+        public virtual void TakeDamage(float amount)
         {
             // TODO: Take damage animation
             health -= amount;
@@ -15,7 +15,7 @@ namespace Braindrops.AdventureToolkit.Combat
                 Die();
         }
 
-        public void Die()
+        protected virtual void Die()
         {
             // TODO: Die animation
         }
