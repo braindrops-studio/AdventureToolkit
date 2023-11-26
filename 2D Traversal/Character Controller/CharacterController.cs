@@ -73,7 +73,7 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
 
             if (animationHandler.IsJumping)
                 return;
-            if (isWalled && rb.velocity.x > 0)
+            if (isWalled && Mathf.Abs(rb.velocity.x) > 0)
             {
                 animationHandler.Idle();
             }
