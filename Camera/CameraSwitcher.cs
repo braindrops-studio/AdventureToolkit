@@ -18,8 +18,6 @@ namespace Braindrops.AdventureToolkit.Camera
         private void Awake()
         {
             locationTracker = ServiceLocator.Instance.GetService<LocationTracker>();
-            currentCamera = defaultCamera.virtualCamera;
-            currentCamera.Priority = 0;
         }
 
         private void Start()
@@ -29,7 +27,8 @@ namespace Braindrops.AdventureToolkit.Camera
 
         public void SwitchToCamera(Locations locationName)
         {
-            currentCamera.Priority = -1;
+            if (currentCamera != null)
+                currentCamera.Priority = -1;
             if (locationName == Locations.Unspecified)
                 currentCamera = defaultCamera.virtualCamera;
             else

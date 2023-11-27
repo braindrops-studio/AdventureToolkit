@@ -15,6 +15,7 @@
         LeftCaveDoor,
         RightCaveDoor,
         FrogArea,
+        TopOuterPuzzle,
         HouseTopFloor,
         HouseGroundFloor,
         HouseBasement,
