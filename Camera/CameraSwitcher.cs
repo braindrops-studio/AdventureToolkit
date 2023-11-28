@@ -18,6 +18,7 @@ namespace Braindrops.AdventureToolkit.Camera
         private void Awake()
         {
             locationTracker = ServiceLocator.Instance.GetService<LocationTracker>();
+            currentCamera = defaultCamera.virtualCamera;
         }
 
         private void Start()
