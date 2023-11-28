@@ -62,12 +62,9 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
             var verticalInput = inputService.VerticalInput;
             
             isWalled = Physics2D.OverlapCircle(wallCheck.position, checkRadius, wallLayer);
-
-            if (isInAir)
-            {
-                rb.gravityScale = 1;
-            }
-            else
+            
+            rb.gravityScale = isInAir ? 1 : 0;
+            if (!isInAir)
             {
                 var hitTop = Physics2D.Raycast(rb.position, Vector2.up, 10, groundLayer);
                 var hitBottom = Physics2D.Raycast(rb.position, Vector2.down, 10, groundLayer);
