@@ -37,7 +37,7 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
         private bool isGrounded;
         private bool isWalled;
         private bool isStuck;
-        private bool isInAir;
+        public bool isInAir;
 
         private Vector2 defaultMoveSpeed;
         private InputService inputService;
@@ -111,11 +111,27 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
                     verticalInput *= distanceBottom / (distanceBottom + distanceTop);
                 rb.velocity = new Vector2(horizontalInput * moveSpeed.x, verticalInput * moveSpeed.y);
             }
+            else
+            {
+                rb.velocity = new Vector2(horizontalInput * moveSpeed.x, verticalInput * moveSpeed.y);
+                var hit = Physics2D.Raycast(groundCheck.position, Vector2.down, checkRadius, groundLayer);
+                if (hit && horizontalInput != 0)
+                {
+                    var tangent = Mathf.Sign(horizontalInput) * new Vector2(hit.normal.y, -hit.normal.x);
+                    rb.velocity = tangent * moveSpeed.x;
+                }
+
+                if (horizontalInput == 0)
+                {
+                    rb.velocity = Vector2.zero;
+                    rb.gravityScale = 0;
+                }
+            }
 
 
             if (animationHandler.IsJumping)
                 return;
-            if (isWalled && Mathf.Abs(rb.velocity.x) > 0)
+            if (isWalled && Mathf.Abs(rb.velocity.x) > 0 && Mathf.Abs(rb.velocity.y) == 0)
             {
                 animationHandler.Idle();
             }
