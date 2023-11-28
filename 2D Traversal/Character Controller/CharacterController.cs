@@ -46,6 +46,8 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
 
         public Transform GroundCheck => groundCheck;
 
+        private bool isFallingScenario;
+
         private void Awake()
         {
             inputService = ServiceLocator.Instance.GetService<InputService>();
@@ -56,10 +58,43 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
             characterScaleX = characterScale.x;            
         }
 
+        public void GoToFallingScenario()
+        {
+            isFallingScenario = true;
+            SetIsInAir(true);
+            rb.gravityScale = 1;
+            rb.AddForce(jumpForce * Vector2.up, ForceMode2D.Impulse);
+            animationHandler.Jump();
+        }
+
+        public void EndFallingScenario()
+        {
+            isFallingScenario = false;
+            isInAir = false;
+            rb.gravityScale = 0;
+            animationHandler.Idle();
+        }
+
         private void Update()
         {
             var horizontalInput = inputService.HorizontalInput;
             var verticalInput = inputService.VerticalInput;
+            HandleCharacterFlip();
+            
+            if (isFallingScenario)
+            {
+                if (!animationHandler.IsJumping)
+                {
+                    rb.gravityScale = .1f;
+                    animationHandler.FreeFall();
+                    rb.velocity = new Vector2(0, rb.velocity.y);
+                    rb.velocity += moveSpeed.x * .2f * new Vector2(horizontalInput, verticalInput);
+                    var hit = Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, groundLayer);
+                    if (Vector3.Distance(hit.point, transform.position) < .1f)
+                        EndFallingScenario();
+                }
+                return;
+            }
             
             isWalled = Physics2D.OverlapCircle(wallCheck.position, checkRadius, wallLayer);
             
@@ -77,7 +112,6 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
                 rb.velocity = new Vector2(horizontalInput * moveSpeed.x, verticalInput * moveSpeed.y);
             }
 
-            HandleCharacterFlip();
 
             if (animationHandler.IsJumping)
                 return;
