@@ -1,4 +1,5 @@
-﻿using Braindrops.AdventureToolkit.Traversal.CharacterAnimation;
+﻿using System;
+using Braindrops.AdventureToolkit.Traversal.CharacterAnimation;
 using Braindrops.Unolith.Inputs;
 using Braindrops.Unolith.ServiceLocator;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
     public class CharacterController : MonoBehaviour
     {
         [Header("Controller ")]
-        [SerializeField] private float moveSpeed = 5f;
+        [SerializeField] private Vector2 moveSpeed = new Vector2(3, 1);
         [SerializeField] private float jumpForce = 5f;
         
         [Header("Animation")]
@@ -25,17 +26,23 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
         [SerializeField] private LayerMask wallLayer;
         [SerializeField] private Transform wallCheck;
 
+        [Space(15)]
+        [SerializeField] private float stickToGroundSpeed;
+
         private Vector3 characterScale;
         private float characterScaleX;
 
         private Rigidbody2D rb;
 
-        // private bool isJumping;
         private bool isGrounded;
         private bool isWalled;
+        private bool isStuck;
+        private bool isInAir;
 
-        private float defaultMoveSpeed;
+        private Vector2 defaultMoveSpeed;
         private InputService inputService;
+
+        public void SetIsInAir(bool value) => isInAir = value;
 
         public Transform GroundCheck => groundCheck;
 
@@ -52,24 +59,28 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
         private void Update()
         {
             var horizontalInput = inputService.HorizontalInput;
+            var verticalInput = inputService.VerticalInput;
+            
+            isWalled = Physics2D.OverlapCircle(wallCheck.position, checkRadius, wallLayer);
+
+            if (isInAir)
+            {
+                rb.gravityScale = 1;
+            }
+            else
+            {
+                var hitTop = Physics2D.Raycast(rb.position, Vector2.up, 10, groundLayer);
+                var hitBottom = Physics2D.Raycast(rb.position, Vector2.down, 10, groundLayer);
+                var distanceTop = Vector2.Distance(rb.position + Vector2.up * .05f, hitTop.point);
+                var distanceBottom = Vector2.Distance(rb.position - Vector2.up * .05f, hitBottom.point);
+                if (verticalInput > 0)
+                    verticalInput *= distanceTop / (distanceBottom + distanceTop);
+                else
+                    verticalInput *= distanceBottom / (distanceBottom + distanceTop);
+                rb.velocity = new Vector2(horizontalInput * moveSpeed.x, verticalInput * moveSpeed.y);
+            }
 
             HandleCharacterFlip();
-
-            isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
-            isWalled = Physics2D.OverlapCircle(wallCheck.position, checkRadius, wallLayer);
-            var hit = Physics2D.Raycast(groundCheck.position, Vector2.down, checkRadius, groundLayer);
-            if (hit && horizontalInput != 0)
-            {
-                var tangent = Mathf.Sign(horizontalInput) * new Vector2(hit.normal.y, -hit.normal.x);
-                rb.velocity = tangent * moveSpeed + (animationHandler.IsJumping ? Vector2.up * rb.velocity.y : Vector2.zero);
-                rb.gravityScale = 1;
-            } else
-            {
-                if (!animationHandler.IsJumping && isGrounded && horizontalInput == 0)
-                    StickToGround();
-                else
-                    rb.gravityScale = 1;                
-            }
 
             if (animationHandler.IsJumping)
                 return;
@@ -83,7 +94,7 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
             }
             else
             {
-                animationHandler.Move(Mathf.Abs(rb.velocity.x));
+                animationHandler.Move(Mathf.Abs(rb.velocity.magnitude));
             }
 
             return;
@@ -104,6 +115,19 @@ namespace Braindrops.AdventureToolkit.Traversal.Controls
             {
                 rb.velocity = Vector2.zero;
                 rb.gravityScale = 0;
+                var hit = Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, groundLayer);
+                // if (isStuck)
+                    // return;
+                if (hit)
+                {
+                    Debug.DrawLine(transform.position, hit.point);
+                    if (Vector3.Distance(transform.position, new Vector3(hit.point.x, hit.point.y, transform.position.z)) <= 0.1f)
+                        isStuck = true;
+                    if (!isStuck)
+                    {
+                       transform.position = Vector3.Lerp(transform.position, new Vector3(hit.point.x, hit.point.y, transform.position.z), stickToGroundSpeed * 5 * Time.deltaTime);
+                    }
+                }
             }
         }
 
