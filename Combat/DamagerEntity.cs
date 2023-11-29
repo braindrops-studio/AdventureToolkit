@@ -5,7 +5,7 @@ namespace Braindrops.AdventureToolkit.Combat
     public class DamagerEntity : MonoBehaviour, Damager
     {
         [Header("Properties")]
-        [SerializeField] private float health;
+        [SerializeField] protected float health;
         
         public virtual void TakeDamage(float amount)
         {
